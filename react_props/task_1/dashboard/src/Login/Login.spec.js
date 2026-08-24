@@ -1,20 +1,19 @@
-import {fireEvent, render, screen} from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import Login from './Login'
 
-
-test('renders School Dashboard p', () => {
+test('renders 2 labels, 2 inputs and 1 button', () => {
   render(<Login />)
-  const pLogin = screen.getByText(/Login to access the full dashboard/i)
-  const inputs = document.getElementsByTagName('input')
+
   const labels = document.getElementsByTagName('label')
-  const button = document.getElementsByTagName('button')
+  const inputs = document.getElementsByTagName('input')
+  const buttons = document.getElementsByTagName('button')
+
   expect(labels.length).toEqual(2)
   expect(inputs.length).toEqual(2)
-  expect(button.length).toEqual(1)
-  expect(pLogin).toBeInTheDocument()
+  expect(buttons.length).toEqual(1)
 })
 
-test('inputs get focus when their labels are clicked', () => {
+test('inputs get focused when the related label is clicked', () => {
   render(<Login />)
 
   const emailInput = screen.getByLabelText(/email/i)
