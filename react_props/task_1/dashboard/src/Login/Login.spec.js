@@ -17,12 +17,12 @@ test('renders School Dashboard p', () => {
 test('inputs get focus when their labels are clicked', () => {
   render(<Login />)
 
-  const emailInput = screen.getByLabelText('email:')
-  const passwordInput = screen.getByLabelText('password:')
+  const emailInput = screen.getByLabelText(/email/i)
+  const passwordInput = screen.getByLabelText(/password/i)
 
-  fireEvent.click(screen.getByText('email:'))
+  fireEvent.click(screen.getByText(/email/i))
   expect(emailInput).toHaveFocus()
 
-  fireEvent.click(screen.getByText('password:'))
+  fireEvent.click(screen.getByText(/password/i))
   expect(passwordInput).toHaveFocus()
 })
