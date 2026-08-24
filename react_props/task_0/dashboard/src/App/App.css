@@ -1,0 +1,11 @@
+body {
+  background-color: white;
+  margin: 0;
+  font-family: serif;
+}
+
+
+.App-body {
+  padding: 20px;
+  min-height: 70vh;
+}

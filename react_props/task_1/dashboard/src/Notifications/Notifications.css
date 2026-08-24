@@ -1,0 +1,24 @@
+.notification-items {
+  border: 1px dashed #e1003c;
+  padding: 10px 15px;
+  margin: 10px;
+  text-align: start;
+  color: black;
+}
+
+.notification-items button {
+  float: right;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.notification-items ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+.notification-items ul li {
+  color: #e1003c;
+}
