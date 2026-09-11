@@ -8,6 +8,25 @@ import './App.css';
 import BodySectionWithMarginBottom from '../BodySection/BodySectionWithMarginBottom';
 import BodySection from '../BodySection/BodySection';
 
+const coursesList = [
+  {
+    id: 1,
+    name: 'ES6',
+    credit: 60,
+  },
+  {
+    id: 2,
+    name: 'Webpack',
+    credit: 20,
+  },
+  {
+    id: 3,
+    name: 'React',
+    credit: 40,
+  },
+];
+
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -28,24 +47,6 @@ class App extends React.Component {
         id: 3,
         type: 'urgent',
         __html: '<strong>Urgent requirement</strong> - complete by EOD',
-      },
-    ];
-
-    this.coursesList = [
-      {
-        id: 1,
-        name: 'ES6',
-        credit: 60,
-      },
-      {
-        id: 2,
-        name: 'Webpack',
-        credit: 20,
-      },
-      {
-        id: 3,
-        name: 'React',
-        credit: 40,
       },
     ];
   }
