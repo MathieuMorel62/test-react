@@ -25,7 +25,7 @@ class App extends React.Component {
       {
         id: 3,
         type: 'urgent',
-        __html: '<strong>Urgent requirement</strong> - complete by EOD',
+        html: '<strong>Urgent requirement</strong> - complete by EOD',
       },
     ];
 
