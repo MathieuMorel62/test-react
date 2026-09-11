@@ -18,7 +18,6 @@ function CourseListRow({
             <th className="border border-gray-400">
               {textFirstCell}
             </th>
-
             <th className="border border-gray-400">
               {textSecondCell}
             </th>
@@ -33,7 +32,6 @@ function CourseListRow({
       <td className="border border-gray-400 pl-2">
         {textFirstCell}
       </td>
-
       <td className="border border-gray-400 pl-2">
         {textSecondCell}
       </td>
