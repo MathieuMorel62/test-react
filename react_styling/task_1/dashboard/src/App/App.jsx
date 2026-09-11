@@ -26,12 +26,10 @@ const coursesList = [
   },
 ];
 
-
 class App extends React.Component {
   constructor(props) {
     super(props);
-  
-    
+
     this.notificationsList = [
       {
         id: 1,
@@ -68,19 +66,19 @@ class App extends React.Component {
     document.removeEventListener('keydown', this.handleKeyDown);
   }
 
-  render () {
-    const {isLoggedIn = false} = this.props;
+  render() {
+    const { isLoggedIn = false } = this.props;
 
     return (
-      <div className='App'>
+      <div className="App">
         <Fragment>
           <Notifications notifications={this.notificationsList} />
-          
+
           <Header />
 
           {isLoggedIn ? (
             <BodySectionWithMarginBottom title="Course list">
-              <CourseList courses={this.coursesList}/>
+              <CourseList courses={coursesList} />
             </BodySectionWithMarginBottom>
           ) : (
             <BodySectionWithMarginBottom title="Log in to continue">
@@ -94,9 +92,9 @@ class App extends React.Component {
 
           <Footer />
         </Fragment>
-
       </div>
     );
   }
 }
+
 export default App;
