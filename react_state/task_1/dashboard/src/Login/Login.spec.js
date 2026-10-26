@@ -54,3 +54,55 @@ test('enables submit input only when valid email and password are provided', asy
 
   expect(submitInput).toBeEnabled()
 })
+
+test('submit stays disabled with invalid email addresses', async () => {
+  const user = userEvent.setup();
+
+  render(<Login />);
+
+  const emailInput = screen.getByLabelText(/email/i);
+  const passwordInput = screen.getByLabelText(/password/i);
+  const submitInput = screen.getByRole('button', { name: 'OK' });
+
+  // Password is valid
+  await user.type(passwordInput, 'password123');
+
+  // Check invalid emails
+  const invalidEmails = [
+    'notanemail',
+    'student@',
+    '@example.com',
+    'student@example',
+  ];
+
+  for (const invalidEmail of invalidEmails) {
+    await user.clear(emailInput);
+    await user.type(emailInput, invalidEmail);
+
+    expect(submitInput).toBeDisabled();
+  }
+
+  // Check a valid email
+  await user.clear(emailInput);
+  await user.type(emailInput, 'student@example.com');
+
+  expect(submitInput).toBeEnabled();
+});
+
+test('password must contain at least 8 characters', async () => {
+  const user = userEvent.setup();
+
+  render(<Login />);
+
+  const emailInput = screen.getByLabelText(/email/i);
+  const passwordInput = screen.getByLabelText(/password/i);
+  const submitInput = screen.getByRole('button', { name: 'OK' });
+
+  await user.type(emailInput, 'student@example.com');
+
+  await user.type(passwordInput, '1234567');
+  expect(submitInput).toBeDisabled();
+
+  await user.type(passwordInput, '8');
+  expect(submitInput).toBeEnabled();
+});
