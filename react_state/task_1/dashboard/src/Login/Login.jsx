@@ -45,10 +45,11 @@ class Login extends Component {
                     <form onSubmit={this.handleLoginSubmit}>
                         <label htmlFor="email">email:</label>
                         <input
-                            type="text"
+                            type="email"
                             id="email"
                             name="email"
-                            onInput={this.handleChangeEmail}
+                            value={this.state.email}
+                            onChange={this.handleChangeEmail}
                         />
 
                         <label htmlFor="password">password:</label>
@@ -56,7 +57,8 @@ class Login extends Component {
                             type="password"
                             id="password"
                             name="password"
-                            onInput={this.handleChangePassword}
+                            value={this.state.password}
+                            onChange={this.handleChangePassword}
                         />
 
                         <input
