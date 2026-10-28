@@ -1,0 +1,1 @@
+{"sessionId":"8cf2fb","runId":"post-fix","hypothesisId":"A","location":"app-component-seq3_testRunner.js:final","message":"post-fix mutation check","data":{"errCode":1,"stdoutLen":0,"stderrLen":146820,"hasFailStderr":true,"verdict":"NOK"},"timestamp":1793191584477}
