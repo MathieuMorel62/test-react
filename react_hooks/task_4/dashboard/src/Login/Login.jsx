@@ -1,76 +1,79 @@
-import React, { Component, Fragment } from 'react';
+import { Fragment } from 'react';
+import { useState } from 'react';
 
-class Login extends Component {
-    constructor(props){
-        super(props)
 
-        this.state = {
-            email: props.email ?? '',
-            password: props.password ?? '',
-            enableSubmit: false
-        }
-    }
-
-    handleLoginSubmit = (event) => {
-        event.preventDefault();
-        this.props.logIn(this.state.email, this.state.password)
-    }
-
-    handleChangeEmail = (event) => {
-        this.setState({ email: event.target.value }, this.handleEnableSubmit)
-    }
-
-    handleChangePassword = (event) => {
-        this.setState({ password: event.target.value }, this.handleEnableSubmit)
-    }
-
-    handleEnableSubmit = () => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        const isValid = this.state.email.trim() !== ""
-            && this.state.password.trim() !== ""
-            && emailRegex.test(this.state.email)
-            && this.state.password.length >= 8
-
-        this.setState({ enableSubmit: isValid })
-    }
+function Login (props){
+    const [enableSubmit, setEnableSubmit] = useState(false)
+    const [formData, setFormData] = useState({ email: '', password: ''})
     
+    function handleChangeEmail (event) {
+          const nextFormData = {
+            ...formData,
+            email: event.target.value,
+        }
+        setFormData(nextFormData)
+        handleEnableSubmit(nextFormData)
+    }
+
+    function handleChangePassword (event) {
+        const nextFormData = {
+            ...formData,
+            password: event.target.value,
+        }
+        setFormData(nextFormData)
+        handleEnableSubmit(nextFormData)
+    }
+
+    function handleEnableSubmit (data) {
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        const isValid = data.email.trim() !=""
+        && emailRegex.test(data.email)
+            && data.password.trim() != ""
+            && data.password.length >= 8
+        if(isValid) setEnableSubmit(true)
+    }
+
+    function handleLoginSubmit (event) {
+        event.preventDefault();
+        props.logIn(formData.email, formData.password)
+    }
 
 
-    render(){
-        return(
+    return(
             <Fragment>
                 <div className="Login flex min-h-[70vh] flex-col items-start gap-2 border-t-2 border-[var(--main-color)] p-3 min-[520px]:p-5">
                     <p>Login to access the full dashboard</p>
-                    <form onSubmit={this.handleLoginSubmit}>
-                        <label htmlFor="email">email:</label>
+                    <form onSubmit={handleLoginSubmit}>
+                        <label htmlFor="email">Email:</label>
                         <input
                             type="text"
-                            value={this.state.email}
+                            value={formData.email}
                             id="email"
                             name="email"
-                            onChange={this.handleChangeEmail}
+                            onChange={handleChangeEmail}
                         />
 
-                        <label htmlFor="password">password:</label>
+                        <label htmlFor="password">Password:</label>
                         <input
                             type="password"
-                            value={this.state.password}
+                            value={formData.password}
                             id="password"
                             name="password"
-                            onChange={this.handleChangePassword}
+                            onChange={handleChangePassword}
                         />
 
                         <input
                             type="submit"
                             value="OK"
-                            disabled={!this.state.enableSubmit}
+                            disabled={!enableSubmit}
                             className="rounded border border-gray-400 px-3 py-1"
                         />
                     </form>
                 </div>
             </Fragment>
         )
-    }
+
 }
 
 export default Login;

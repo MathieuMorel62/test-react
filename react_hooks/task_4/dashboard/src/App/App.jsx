@@ -6,152 +6,111 @@ import CourseList from '../CourseList/CourseList';
 import BodySection from '../BodySection/BodySection';
 import BodySectionWithMarginBottom from '../BodySection/BodySectionWithMarginBottom';
 import WithLogging from '../HOC/WithLogging';
-import React from 'react';
+import React, { useContext, useState,useMemo } from 'react';
 import AppContext from '../Context/context';
 
 const LoginWithLogging = WithLogging(Login);
 const CourseListWithLogging = WithLogging(CourseList);
 
-class App extends React.Component {
-  constructor(props) {
-    super(props)
+function App(props){
 
-    const user = {
-      email: '',
-      password: '',
-      isLoggedIn: false
-    }
-
-    this.notificationsList = [
+  const context = useContext(AppContext)
+  const userContext = context.user
+  const notificationsList = [
       { id: 1, type: 'default', value: 'New course available' },
       { id: 2, type: 'urgent', value: 'New resume available' },
       { id: 3, type: 'urgent', value: 'New data available' },
-    ]
+  ]
 
-    this.coursesList = [
+  const coursesList = [
       { id: 1, name: "ES6", credit: 60 },
       { id: 2, name: "Webpack", credit: "40" },
       { id: 3, name: "React", credit: "20" },
-    ]
+  ]
 
-    this.state = {
-      displayDrawer: false,
-      user,
-      notifications: this.notificationsList,
-      courses: this.coursesList
-    }
 
-    this.providerValue = {
-      user,
-      logOut: this.logOut
-    }
+  const [displayDrawer, setDisplayDrawer] = useState(true);
+  const [user, setUser] = useState(userContext)
+  const [notifications, setNotifications] = useState(notificationsList)
+  
+
+  const logIn = (email, password) => {
+    setUser({
+      email,
+      password,
+      isLoggedIn: true,
+    });
   }
 
-  logIn = (email, password) => {
-    this.setState((prevState) => {
-      const user = {
-        ...prevState.user,
-        email,
-        password,
-        isLoggedIn: true
-      }
-
-      this.providerValue = {
-        user,
-        logOut: this.logOut
-      }
-
-      return { user }
-    })
+  const logOut = () => {
+    setUser({
+      email: '',
+      password: '',
+      isLoggedIn: false,
+    });
   }
 
-  logOut = () => {
-    this.setState(() => {
-      const user = {
-        email: '',
-        password: '',
-        isLoggedIn: false
-      }
-
-      this.providerValue = {
-        user,
-        logOut: this.logOut
-      }
-
-      return { user }
-    })
-  }
-
-  markNotificationAsRead = (id) => {
-    console.log(`Notification ${id} has been marked as read`)
-    this.setState((prevState) => ({
-      notifications: prevState.notifications.filter(
+  const markNotificationAsRead = React.useCallback((id) => {
+    
+    setNotifications(previousNotifications =>
+      previousNotifications.filter(
         (notification) => notification.id !== id
       )
-    }))
-  }
+    );
+    console.log(`Notification ${id} has been marked as read`);
+  }, [])
 
-  componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyDown)
-  }
+  const handleDisplayDrawer = React.useCallback(() => {
+    setDisplayDrawer(true);
+  }, []);
 
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyDown)
-  }
+  const handleHideDrawer = React.useCallback(() => {
+    setDisplayDrawer(false);
+  }, []);
 
-  handleDisplayDrawer = () => {
-    this.setState({ displayDrawer: true })
-  }
+  const provider = useMemo(
+    () => ({
+      user,
+      logOut,
+    }),
+    [user, logOut]
+  );
 
-  handleHideDrawer = () => {
-    this.setState({ displayDrawer: false })
-  }
-
-  handleKeyDown = (event) => {
-    if (event.ctrlKey && event.key === 'h') {
-      event.preventDefault()
-      alert("Logging you out")
-      this.logOut()
-    }
-  }
-
-  render() {
-    const { user } = this.state
-
-    return (
-      <AppContext.Provider value={this.providerValue}>
+  return (
+      <AppContext.Provider value={provider}>
         <div className="App flex min-h-screen w-full flex-col px-3 sm:px-5">
           <div className="root-notifications">
             <Notifications
-              displayDrawer={this.state.displayDrawer}
-              notifications={this.state.notifications}
-              markNotificationAsRead={this.markNotificationAsRead}
-              handleDisplayDrawer={this.handleDisplayDrawer}
-              handleHideDrawer={this.handleHideDrawer}
+              displayDrawer={displayDrawer}
+              notifications={notifications}
+              markNotificationAsRead={markNotificationAsRead}
+              handleDisplayDrawer={handleDisplayDrawer}
+              handleHideDrawer={handleHideDrawer}
             />
           </div>
           <Header />
-          <BodySection title="News from the School">
-            <p>Holberton School News goes here</p>
-          </BodySection>
           {user.isLoggedIn ? (
             <BodySectionWithMarginBottom title="Course list">
-              <CourseListWithLogging courses={this.state.courses} />
+              <CourseListWithLogging courses={coursesList} />
             </BodySectionWithMarginBottom>
           ) : (
-            <BodySectionWithMarginBottom>
+            <BodySectionWithMarginBottom title="Log in to continue">
               <LoginWithLogging
                 email={user.email}
                 password={user.password}
-                logIn={this.logIn}
+                logIn={logIn}
               />
             </BodySectionWithMarginBottom>
           )}
+          <BodySection title="News from the School">
+            <p>Holberton School News goes here</p>
+          </BodySection>
           <Footer />
         </div>
       </AppContext.Provider>
     )
-  }
+
 }
+
 
 export default App;
