@@ -62,7 +62,7 @@ describe('App', () => {
 
   test('removes a notification and logs when it is marked as read', () => {
     render(<App />)
-    fireEvent.click(screen.getByText('Your Notifications'))
+    fireEvent.click(screen.getByText('Your notifications'))
     expect(screen.getByText('New resume available')).toBeInTheDocument()
 
     fireEvent.click(screen.getByText('New resume available'))
@@ -81,7 +81,7 @@ describe('App', () => {
     fireEvent.click(screen.getByText('Close'))
     expect(screen.queryByText('Here is the list of notifications')).not.toBeInTheDocument()
 
-    fireEvent.click(screen.getByText('Your Notifications'))
+    fireEvent.click(screen.getByText('Your notifications'))
     expect(screen.getByText('Here is the list of notifications')).toBeInTheDocument()
   })
 
