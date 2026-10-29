@@ -12,7 +12,7 @@ const Notifications = memo(function Notifications (props){
     return (
         <div className="fixed inset-0 z-50 h-screen w-full overflow-y-auto bg-white p-3 min-[912px]:inset-auto min-[912px]:top-0 min-[912px]:right-0 min-[912px]:h-auto min-[912px]:w-1/4 min-[912px]:overflow-visible min-[912px]:p-0">
           <div className={`notification-title text-right text-sm min-[912px]:text-base ${notifications.length > 0 && !displayDrawer ? 'animate-bounce' : ''}`}>
-            <p onClick={handleDisplayDrawer}>Your Notifications</p>
+            <p onClick={handleDisplayDrawer}>Your notifications</p>
           </div>
           {displayDrawer === true &&
           
