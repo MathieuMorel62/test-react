@@ -2,8 +2,8 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import Notifications from './Notifications'
 import NotificationItem from './NotificationItem'
 
-jest.mock('./NotificationItem', () => jest.fn(({ markAsRead, value }) => (
-  <li onClick={markAsRead}>{value}</li>
+jest.mock('./NotificationItem', () => jest.fn(({ id, markAsRead, value }) => (
+  <li onClick={() => markAsRead(id)}>{value}</li>
 )))
   const notificationsList = [
     { id: 1, type: 'default', value: 'New course available' },
@@ -19,7 +19,7 @@ test('display drawer prop set to false', ()=>{
   const yourNotif = screen.getByText('Your notifications')
   expect(yourNotif).toBeInTheDocument()
   expect(paragraph).not.toBeInTheDocument()
-  expect(button).not.toBeInTheDocument(undefined)
+  expect(button).not.toBeInTheDocument()
   expect(NotificationItem).not.toHaveBeenCalled()
 
 })
