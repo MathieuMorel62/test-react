@@ -1,40 +1,23 @@
 import { getCurrentYear, getFooterCopy, getLatestNotification } from './utils'
 
-describe('getCurrentYear', () => {
-  afterEach(() => {
-    jest.useRealTimers()
-  })
+describe('utils', () => {
+	afterEach(() => {
+		jest.useRealTimers()
+	})
 
-  // Freezing the clock avoids a time bomb: hardcoding a year would make the
-  // suite fail on 1 January, and comparing against new Date() would only
-  // restate the implementation.
-  test('returns the year of the system clock', () => {
-    jest.useFakeTimers().setSystemTime(new Date(2020, 5, 15))
+	test('getCurrentYear returns the correct year', () => {
+		jest.useFakeTimers()
+		jest.setSystemTime(new Date('2024-01-01T00:00:00Z'))
 
-    expect(getCurrentYear()).toBe(2020)
-  })
+		expect(getCurrentYear()).toBe(2024)
+	})
 
-  test('follows the system clock when the year changes', () => {
-    jest.useFakeTimers().setSystemTime(new Date(2031, 5, 15))
+	test('getFooterCopy returns the correct string for true and false', () => {
+		expect(getFooterCopy(true)).toBe('Holberton School')
+		expect(getFooterCopy(false)).toBe('Holberton School main dashboard')
+	})
 
-    expect(getCurrentYear()).toBe(2031)
-  })
-})
-
-describe('getFooterCopy', () => {
-  test('returns Holberton School when isIndex is true', () => {
-    expect(getFooterCopy(true)).toMatch(/^holberton school$/i)
-  })
-
-  test('returns Holberton School main dashboard when isIndex is false', () => {
-    expect(getFooterCopy(false)).toMatch(/^holberton school main dashboard$/i)
-  })
-})
-
-describe('getLatestNotification', () => {
-  test('returns the urgent requirement markup', () => {
-    expect(getLatestNotification()).toMatch(
-      /^<strong>urgent requirement<\/strong>\s*-\s*complete by eod$/i
-    )
-  })
+	test('getLatestNotification returns the correct string', () => {
+		expect(getLatestNotification()).toBe('<strong>Urgent requirement</strong> - complete by EOD')
+	})
 })

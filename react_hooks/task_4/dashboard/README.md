@@ -1,22 +1,18 @@
-# dashboard
+# React + Vite
 
-The Holberton *School dashboard*, built with React and Vite.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Scripts
+Currently, two official plugins are available:
 
-| Command | Description |
-| ------- | ----------- |
-| `npm run dev` | Start the Vite dev server |
-| `npm run build` | Build for production into `dist/` |
-| `npm run preview` | Serve the production build |
-| `npm run lint` | Run ESLint |
-| `npm test` | Run the Jest test suite |
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## Testing setup
+## React Compiler
 
-Jest is configured in [package.json](package.json):
+The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
 
-- `.babelrc` transpiles JSX and modern syntax through `@babel/preset-env` and `@babel/preset-react`
-- `fileTransformer.js` replaces image imports with their file name
-- `identity-obj-proxy` stands in for CSS modules
-- `setupTests.js` adds the `@testing-library/jest-dom` matchers
+Note: This will impact Vite dev & build performances.
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.

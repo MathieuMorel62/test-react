@@ -1,29 +1,26 @@
-import { Component } from 'react'
-
-// Falls back to Component when the wrapped element carries no name of its own.
-const getDisplayName = (WrappedComponent) =>
-  WrappedComponent.displayName || WrappedComponent.name || 'Component'
+import React from 'react';
 
 function WithLogging(WrappedComponent) {
-  const name = getDisplayName(WrappedComponent)
-
-  class WithLoggingComponent extends Component {
+  class WithLoggingComponent extends React.Component {
     componentDidMount() {
-      console.log(`Component ${name} is mounted`)
+      const componentName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
+      console.log(`Component ${componentName} is mounted`);
     }
 
     componentWillUnmount() {
-      console.log(`Component ${name} is going to unmount`)
+      const componentName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
+      console.log(`Component ${componentName} is going to unmount`);
     }
 
     render() {
-      return <WrappedComponent {...this.props} />
+      return <WrappedComponent {...this.props} />;
     }
   }
 
-  WithLoggingComponent.displayName = `WithLogging(${name})`
+  const componentName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
+  WithLoggingComponent.displayName = `WithLogging(${componentName})`;
 
-  return WithLoggingComponent
+  return WithLoggingComponent;
 }
 
-export default WithLogging
+export default WithLogging;

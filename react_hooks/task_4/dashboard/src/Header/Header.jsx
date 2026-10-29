@@ -1,43 +1,36 @@
-import { useContext } from 'react'
 import holbertonLogo from '../assets/holberton-logo.jpg'
-import newContext from '../Context/context'
+import AppContext from '../Context/context';
+import React from 'react';
 
-function Header() {
-  // Hors de tout Provider, `useContext` renvoie la valeur par défaut du
-  // contexte : un visiteur non connecté.
-  const { user, logOut } = useContext(newContext)
+class Header extends React.Component {
+  constructor(props){
+    super(props)
+  }
+  static contextType = AppContext
+  render(){
+    const {user, logOut} = this.context
+    console.log(user)
+    return (
+     <>
+       <div className="header">
+         <header className="Header flex flex-col items-start gap-3 border-b-2 border-[var(--main-color)] p-3 min-[520px]:flex-row min-[520px]:items-center min-[520px]:gap-5 min-[520px]:p-5">
+           <img className="w-24 min-[520px]:w-[150px]" src={holbertonLogo} alt="Holberton logo" />
+           <h1 className="m-0 text-2xl text-[var(--main-color)] min-[520px]:text-[2rem]">School dashboard</h1>
+         </header>
+     </div>
+     {
+       user.isLoggedIn &&
+       (
+         <div id='logoutSection'>
+           <p>Welcome {user.email}</p>
+           <a onClick={logOut}>Logout</a>
+         </div>
+       )
+     }
+   </>
+    )
+  }
 
-  return (
-    <>
-      {/* Rangée sur grand écran, colonne centrée dès que la largeur ne
-          suffit plus. */}
-      <div className="App-header flex items-center pt-2.5 max-[912px]:flex-col max-[912px]:gap-2">
-        <img src={holbertonLogo} alt="holberton logo" className="w-60" />
-        {/* Le preflight remet les titres à `font-size: inherit` et
-            `font-weight: inherit` : taille et graisse sont donc explicites. */}
-        <h1 className="text-5xl font-bold text-(--main-color) max-[520px]:text-4xl">
-          School Dashboard
-        </h1>
-      </div>
-      {user.isLoggedIn && (
-        <div id="logoutSection" className="mt-2">
-          Welcome {user.email} (
-          <a
-            href="#"
-            className="cursor-pointer italic"
-            onClick={(event) => {
-              // Le lien ne navigue nulle part : seul l'appel compte.
-              event.preventDefault()
-              logOut()
-            }}
-          >
-            logout
-          </a>
-          )
-        </div>
-      )}
-    </>
-  )
 }
 
-export default Header
+export default Header;

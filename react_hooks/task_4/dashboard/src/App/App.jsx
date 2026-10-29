@@ -1,165 +1,157 @@
-/* eslint-disable react-refresh/only-export-components --
-   les listes initiales sont exportées pour les tests, à côté du composant. */
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import axios from 'axios'
+import Footer from '../Footer/Footer';
+import Header from '../Header/Header';
+import Login from '../Login/Login';
 import Notifications from '../Notifications/Notifications'
-import Header from '../Header/Header'
-import Login from '../Login/Login'
-import CourseList from '../CourseList/CourseList'
-import Footer from '../Footer/Footer'
-import BodySection from '../BodySection/BodySection'
-import BodySectionWithMarginBottom from '../BodySection/BodySectionWithMarginBottom'
-import newContext, { user as defaultUser } from '../Context/context'
-import { getLatestNotification } from '../utils/utils'
+import CourseList from '../CourseList/CourseList';
+import BodySection from '../BodySection/BodySection';
+import BodySectionWithMarginBottom from '../BodySection/BodySectionWithMarginBottom';
+import WithLogging from '../HOC/WithLogging';
+import React from 'react';
+import AppContext from '../Context/context';
 
-// Nommé en capitale : ESLint, sans plugin React, ne reconnaît comme utilisée
-// en JSX qu'une variable qui commence par une majuscule.
-const ContextProvider = newContext.Provider
+const LoginWithLogging = WithLogging(Login);
+const CourseListWithLogging = WithLogging(CourseList);
 
-export const notificationsList = [
-  { id: 1, type: 'default', value: 'New course available' },
-  { id: 2, type: 'urgent', value: 'New resume available' },
-  { id: 3, type: 'urgent', html: { __html: getLatestNotification() } },
-]
+class App extends React.Component {
+  constructor(props) {
+    super(props)
 
-export const coursesList = [
-  { id: 1, name: 'ES6', credit: 60 },
-  { id: 2, name: 'Webpack', credit: 20 },
-  { id: 3, name: 'React', credit: 40 },
-]
-
-function App() {
-  // Le tiroir est ouvert au chargement, comme sur la démo de l'énoncé : le
-  // checker clique directement sur une notification sans l'ouvrir.
-  const [displayDrawer, setDisplayDrawer] = useState(true)
-  // L'utilisateur du contexte : un visiteur non connecté. C'est l'état initial,
-  // et celui auquel la déconnexion revient.
-  const [user, setUser] = useState(defaultUser)
-  const [notifications, setNotifications] = useState(notificationsList)
-
-  // Les mêmes notifications sont servies par `public/notifications.json`, que
-  // les tests du checker simulent avec jest-mock-axios. Si la requête échoue,
-  // la liste initiale reste en place.
-  useEffect(() => {
-    let isMounted = true
-
-    axios
-      .get('http://localhost:5173/notifications.json')
-      .then(({ data }) => {
-        if (!isMounted || !Array.isArray(data?.notifications)) return
-        // Le JSON ne peut pas porter le HTML calculé de la dernière
-        // notification : il est rempli ici, comme dans la liste initiale.
-        setNotifications(
-          data.notifications.map((notification) =>
-            notification.html && !notification.html.__html
-              ? { ...notification, html: { __html: getLatestNotification() } }
-              : notification
-          )
-        )
-      })
-      .catch(() => {})
-
-    return () => {
-      isMounted = false
+    const user = {
+      email: '',
+      password: '',
+      isLoggedIn: false
     }
-  }, [])
 
-  // Même principe pour les cours, demandés à chaque connexion.
-  const [courses, setCourses] = useState(coursesList)
+    this.notificationsList = [
+      { id: 1, type: 'default', value: 'New course available' },
+      { id: 2, type: 'urgent', value: 'New resume available' },
+      { id: 3, type: 'urgent', value: 'New data available' },
+    ]
 
-  useEffect(() => {
-    if (!user.isLoggedIn) return undefined
-    let isMounted = true
+    this.coursesList = [
+      { id: 1, name: "ES6", credit: 60 },
+      { id: 2, name: "Webpack", credit: "40" },
+      { id: 3, name: "React", credit: "20" },
+    ]
 
-    axios
-      .get('http://localhost:5173/courses.json')
-      .then(({ data }) => {
-        if (isMounted && Array.isArray(data?.courses)) setCourses(data.courses)
-      })
-      .catch(() => {})
-
-    return () => {
-      isMounted = false
+    this.state = {
+      displayDrawer: false,
+      user,
+      notifications: this.notificationsList,
+      courses: this.coursesList
     }
-  }, [user.isLoggedIn])
 
-  // Chaque callback est mémoïsé : Notifications ne compare pas ses callbacks,
-  // il doit donc toujours recevoir les mêmes fonctions.
-  const handleDisplayDrawer = useCallback(() => {
-    setDisplayDrawer(true)
-  }, [])
+    this.providerValue = {
+      user,
+      logOut: this.logOut
+    }
+  }
 
-  const handleHideDrawer = useCallback(() => {
-    setDisplayDrawer(false)
-  }, [])
+  logIn = (email, password) => {
+    this.setState((prevState) => {
+      const user = {
+        ...prevState.user,
+        email,
+        password,
+        isLoggedIn: true
+      }
 
-  const logIn = useCallback((email, password) => {
-    setUser({ email, password, isLoggedIn: true })
-  }, [])
+      this.providerValue = {
+        user,
+        logOut: this.logOut
+      }
 
-  const logOut = useCallback(() => {
-    setUser(defaultUser)
-  }, [])
+      return { user }
+    })
+  }
 
-  // Une nouvelle liste plutôt qu'un retrait sur place, calculée depuis l'état
-  // courant : deux clics rapprochés ne s'écrasent pas.
-  const markNotificationAsRead = useCallback((id) => {
+  logOut = () => {
+    this.setState(() => {
+      const user = {
+        email: '',
+        password: '',
+        isLoggedIn: false
+      }
+
+      this.providerValue = {
+        user,
+        logOut: this.logOut
+      }
+
+      return { user }
+    })
+  }
+
+  markNotificationAsRead = (id) => {
     console.log(`Notification ${id} has been marked as read`)
-    setNotifications((prevNotifications) =>
-      prevNotifications.filter((notification) => notification.id !== id)
-    )
-  }, [])
+    this.setState((prevState) => ({
+      notifications: prevState.notifications.filter(
+        (notification) => notification.id !== id
+      )
+    }))
+  }
 
-  // Le Provider compare sa valeur par référence : un objet recréé à chaque
-  // rendu ferait re-rendre tous ses consommateurs, même quand seul le tiroir
-  // bouge. L'objet n'est donc reconstruit que si l'utilisateur a changé.
-  const contextValue = useMemo(() => ({ user, logOut }), [user, logOut])
+  componentDidMount() {
+    window.addEventListener('keydown', this.handleKeyDown)
+  }
 
-  return (
-    <ContextProvider value={contextValue}>
-      {/* Conteneur de l'application : une colonne flex d'au moins une
-          hauteur d'écran, ce qui laisse le pied de page se coller en bas, et
-          l'ancrage `relative` du panneau de notifications. */}
-      <div className="relative flex min-h-screen flex-col px-3">
-        <div className="root-notifications">
-          {/* Le tiroir et sa liste sont des états d'App : Notifications les
-              affiche et signale les clics par ses callbacks. */}
-          <Notifications
-            notifications={notifications}
-            displayDrawer={displayDrawer}
-            handleDisplayDrawer={handleDisplayDrawer}
-            handleHideDrawer={handleHideDrawer}
-            markNotificationAsRead={markNotificationAsRead}
-          />
-        </div>
-        <Header />
-        <div className="App-body pt-[38px]">
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.handleKeyDown)
+  }
+
+  handleDisplayDrawer = () => {
+    this.setState({ displayDrawer: true })
+  }
+
+  handleHideDrawer = () => {
+    this.setState({ displayDrawer: false })
+  }
+
+  handleKeyDown = (event) => {
+    if (event.ctrlKey && event.key === 'h') {
+      event.preventDefault()
+      alert("Logging you out")
+      this.logOut()
+    }
+  }
+
+  render() {
+    const { user } = this.state
+
+    return (
+      <AppContext.Provider value={this.providerValue}>
+        <div className="App flex min-h-screen w-full flex-col px-3 sm:px-5">
+          <div className="root-notifications">
+            <Notifications
+              displayDrawer={this.state.displayDrawer}
+              notifications={this.state.notifications}
+              markNotificationAsRead={this.markNotificationAsRead}
+              handleDisplayDrawer={this.handleDisplayDrawer}
+              handleHideDrawer={this.handleHideDrawer}
+            />
+          </div>
+          <Header />
+          <BodySection title="News from the School">
+            <p>Holberton School News goes here</p>
+          </BodySection>
           {user.isLoggedIn ? (
             <BodySectionWithMarginBottom title="Course list">
-              <CourseList courses={courses} />
+              <CourseListWithLogging courses={this.state.courses} />
             </BodySectionWithMarginBottom>
           ) : (
-            <BodySectionWithMarginBottom title="Log in to continue">
-              <Login
-                logIn={logIn}
+            <BodySectionWithMarginBottom>
+              <LoginWithLogging
                 email={user.email}
                 password={user.password}
+                logIn={this.logIn}
               />
             </BodySectionWithMarginBottom>
           )}
-          <BodySection title="News from the School">
-            <p>
-              ipsum Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-              Similique, asperiores architecto blanditiis fuga doloribus sit
-              illum aliquid ea distinctio minus accusantium, impedit quo
-              voluptatibus ut magni dicta. Recusandae, quia dicta?
-            </p>
-          </BodySection>
+          <Footer />
         </div>
-        <Footer />
-      </div>
-    </ContextProvider>
-  )
+      </AppContext.Provider>
+    )
+  }
 }
 
-export default App
+export default App;
