@@ -1,27 +1,44 @@
-import { screen } from '@testing-library/react';
-import { renderWithProviders } from '../../test-utils';
+import { render, screen } from '@testing-library/react';
 import Footer from './Footer';
+import { getCurrentYear, getFooterCopy } from '../../utils/utils';
 
 test('It should render footer with copyright text', () => {
-  renderWithProviders(<Footer />);
-  const footer = screen.getByText(/copyright/i);
-  expect(footer).toHaveTextContent(new RegExp(`copyright ${new Date().getFullYear()}`, 'i'));
-  expect(footer).toHaveTextContent(/holberton school/i);
+  const defaultUser = {
+    email: '',
+    password: '',
+    isLoggedIn: false
+  };
+
+  render(<Footer user={defaultUser} />)
+
+  const footerParagraph = screen.getByText(/copyright/i);
+
+  expect(footerParagraph).toHaveTextContent(new RegExp(`copyright ${(new Date()).getFullYear()}`, 'i'))
+  expect(footerParagraph).toHaveTextContent(/holberton school/i)
 });
 
 test('Contact us link is not displayed when user is logged out', () => {
-  renderWithProviders(<Footer />);
-  expect(screen.queryByText(/contact us/i)).not.toBeInTheDocument();
+  const loggedOutUser = {
+    email: '',
+    password: '',
+    isLoggedIn: false
+  };
+
+  render(<Footer user={loggedOutUser} />);
+
+  const contactLink = screen.queryByText(/contact us/i);
+  expect(contactLink).not.toBeInTheDocument();
 });
 
 test('Contact us link is displayed when user is logged in', () => {
-  renderWithProviders(<Footer />, {
-    preloadedState: {
-      auth: {
-        user: { email: 'test@test.com', password: 'password123' },
-        isLoggedIn: true,
-      },
-    },
-  });
-  expect(screen.getByText(/contact us/i)).toBeInTheDocument();
+  const loggedInUser = {
+    email: 'test@test.com',
+    password: 'password123',
+    isLoggedIn: true
+  };
+
+  render(<Footer user={loggedInUser} />);
+
+  const contactLink = screen.getByText(/contact us/i);
+  expect(contactLink).toBeInTheDocument();
 });
