@@ -33,9 +33,9 @@ describe('notificationsSlice', () => {
     const action = markNotificationAsRead(1);
 
     const expectedState = {
-      ...initialState,
+      ...stateWithNotifications,
       notifications: [
-        { id: 2, message: 'Notification 2' },
+        { id: 2, message: 'Notification 2' }
       ],
     };
 
@@ -47,10 +47,13 @@ describe('notificationsSlice', () => {
   describe('fetchNotifications async thunk', () => {
     test('should handle fetchNotifications.pending', () => {
       const action = {
-        type: fetchNotifications.pending.type,
+        type: fetchNotifications.pending.type
       };
 
-      const state = notificationsSlice(initialState, action);
+      const state = notificationsSlice(
+        initialState,
+        action
+      );
 
       expect(state).toEqual({
         ...initialState,
@@ -59,16 +62,14 @@ describe('notificationsSlice', () => {
     });
 
     test('should handle fetchNotifications.rejected', () => {
-      const loadingState = {
-        ...initialState,
-        loading: true,
-      };
-
       const action = {
         type: fetchNotifications.rejected.type,
       };
 
-      const state = notificationsSlice(loadingState, action);
+      const state = notificationsSlice(
+        { ...initialState, loading: true },
+        action
+      );
 
       expect(state).toEqual({
         ...initialState,
@@ -81,19 +82,19 @@ describe('notificationsSlice', () => {
         {
           id: 1,
           type: 'default',
-          value: 'New course available',
+          value: 'New course available'
         },
         {
           id: 2,
           type: 'urgent',
-          value: 'New resume available',
+          value: 'New resume available'
         },
         {
           id: 3,
           type: 'urgent',
           html: {
-            __html: '<strong>Urgent requirement</strong>',
-          },
+            __html: '<strong>Urgent requirement</strong>'
+          }
         },
       ];
 
@@ -107,7 +108,7 @@ describe('notificationsSlice', () => {
       );
 
       mockAxios.mockResponse({
-        data: { notifications },
+        data: { notifications }
       });
 
       await promise;
@@ -134,22 +135,17 @@ describe('notificationsSlice', () => {
         {
           id: 3,
           type: 'urgent',
-          html: { __html: 'test' },
-        },
+          html: { __html: 'test' }
+        }
       ];
-
-      const loadingState = {
-        ...initialState,
-        loading: true,
-      };
 
       const action = {
         type: fetchNotifications.fulfilled.type,
-        payload: mockNotifications,
+        payload: mockNotifications
       };
 
       const newState = notificationsSlice(
-        loadingState,
+        { ...initialState, loading: true },
         action
       );
 
@@ -165,7 +161,7 @@ describe('notificationsSlice', () => {
     test('should verify payload contains expected notification structure', async () => {
       const mockNotifications = [
         { id: 1, type: 'default', value: 'First' },
-        { id: 2, type: 'urgent', value: 'Second' },
+        { id: 2, type: 'urgent', value: 'Second' }
       ];
 
       const dispatch = jest.fn();
@@ -178,7 +174,7 @@ describe('notificationsSlice', () => {
       );
 
       mockAxios.mockResponse({
-        data: { notifications: mockNotifications },
+        data: { notifications: mockNotifications }
       });
 
       await promise;
@@ -188,8 +184,8 @@ describe('notificationsSlice', () => {
       expect(fulfilledAction.payload).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            id: expect.any(Number),
-          }),
+            id: expect.any(Number)
+          })
         ])
       );
 
