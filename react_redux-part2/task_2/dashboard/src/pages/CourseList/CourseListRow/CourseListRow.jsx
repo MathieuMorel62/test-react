@@ -23,7 +23,9 @@ export default function CourseListRow({
   return (
     isHeader ? (
       <tr className={css(rowStyle)}>
-        <th colSpan={textSecondCell ? 1 : 2}>{textFirstCell}</th>
+        <th colSpan={textSecondCell ? 1 : 2}>
+          {textFirstCell}
+        </th>
         {textSecondCell ? <th>{textSecondCell}</th> : null}
       </tr>
     ) : (
