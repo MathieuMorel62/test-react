@@ -1,3 +1,5 @@
+jest.mock('axios', () => jest.requireActual('jest-mock-axios'));
+
 import { configureStore } from '@reduxjs/toolkit'
 import mockAxios from 'jest-mock-axios'
 import coursesReducer, { fetchCourses } from '../courses/coursesSlice'

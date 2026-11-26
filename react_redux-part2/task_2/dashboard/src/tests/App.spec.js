@@ -1,3 +1,5 @@
+jest.mock('axios', () => jest.requireActual('jest-mock-axios'));
+
 import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import App from '../App';
 import mockAxios from 'jest-mock-axios';
