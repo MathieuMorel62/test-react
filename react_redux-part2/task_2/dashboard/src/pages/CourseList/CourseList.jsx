@@ -41,33 +41,32 @@ function CourseList() {
       }
     }
   }
-
   return (
     <div className={css(styles.courses)}>
       {
-        courses.length > 0 ?
+        courses.length > 0 ? 
         (
           <table id='CourseList' className={css(styles.table)}>
             <thead>
-              <CourseListRow
-                textFirstCell="Available courses"
-                isHeader={true}
+              <CourseListRow 
+                textFirstCell="Available courses" 
+                isHeader={true} 
               />
-              <CourseListRow
-                textFirstCell="Course name"
-                textSecondCell="Credit"
-                isHeader={true}
+              <CourseListRow 
+                textFirstCell="Course name" 
+                textSecondCell="Credit" 
+                isHeader={true} 
               />
             </thead>
             <tbody>
               {
                 courses.map(course => (
-                  <CourseListRow
+                  <CourseListRow 
                     key={course.id}
-                    id={course.id}
-                    textFirstCell={course.name}
+                    id={course.id} 
+                    textFirstCell={course.name} 
                     textSecondCell={course.credit}
-                    onChangeRow={onChangeRow}
+                    changeRow={onChangeRow}
                     isSelected={course.isSelected || false}
                   />
                 ))
@@ -77,9 +76,9 @@ function CourseList() {
         ) : (
           <table id='CourseList' className={css(styles.table)}>
             <thead>
-              <CourseListRow
-                isHeader={true}
-                textFirstCell="No course available yet"
+              <CourseListRow 
+                isHeader={true} 
+                textFirstCell="No course available yet" 
               />
             </thead>
           </table>

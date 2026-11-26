@@ -1,5 +1,3 @@
-jest.mock('axios', () => jest.requireActual('jest-mock-axios'));
-
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';

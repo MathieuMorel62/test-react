@@ -1,5 +1,3 @@
-jest.mock('axios', () => jest.requireActual('jest-mock-axios'));
-
 import notificationsSlice, {
   markNotificationAsRead,
   showDrawer,

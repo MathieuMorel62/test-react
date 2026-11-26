@@ -1,5 +1,3 @@
-jest.mock('axios', () => jest.requireActual('jest-mock-axios'));
-
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
@@ -103,7 +101,7 @@ describe('CourseListRow', () => {
       expect(checkbox).not.toBeChecked();
 
       fireEvent.click(checkbox);
-      expect(store.getState().courses.courses[index].isSelected).toBe(true);
+      expect(store.getState().courses.courses[0].isSelected).toBe(true);
 
       expect(checkbox).toBeChecked();
     });
@@ -118,7 +116,7 @@ describe('CourseListRow', () => {
         textSecondCell="60"
         id={1}
         isSelected={true}
-        onChangeRow={mockOnChangeRow}
+        changeRow={mockOnChangeRow}
       />
     );
 
@@ -131,6 +129,6 @@ describe('CourseListRow', () => {
     fireEvent.click(checkbox);
 
     expect(mockOnChangeRow).toHaveBeenCalledTimes(1);
-    expect(mockOnChangeRow).toHaveBeenCalledWith(1, false);
+    expect(mockOnChangeRow).toHaveBeenCalledWith(1, false); 
   });
 });

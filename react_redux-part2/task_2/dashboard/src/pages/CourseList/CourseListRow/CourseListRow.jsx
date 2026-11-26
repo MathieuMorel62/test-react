@@ -9,16 +9,15 @@ const styles = StyleSheet.create({
   }
 });
 
-export default function CourseListRow(
-{
-    id,
-    isHeader = false,
-    textFirstCell = '',
-    textSecondCell = null,
-    onChangeRow = () => {},
-    isSelected = false
-}
-) {
+export default function CourseListRow({
+  id,
+  isHeader = false,
+  textFirstCell = '',
+  textSecondCell = null,
+  changeRow = () => {},
+  onChangeRow = changeRow,
+  isSelected = false
+}) {
   const rowStyle = isHeader ? styles.headerRow : styles.row;
 
   return (
@@ -40,5 +39,5 @@ export default function CourseListRow(
         <td>{textSecondCell}</td>
       </tr>
     )
-  )
+  );
 }
