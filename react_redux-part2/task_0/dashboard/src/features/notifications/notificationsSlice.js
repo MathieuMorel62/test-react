@@ -54,5 +54,5 @@ const notificationsSlice = createSlice({
     }
 )
 
-export const {markNotificationAsRead, showDrawer, hideDrawer} = notificationsSlice.actions
+export const { markNotificationAsRead } = notificationsSlice.actions;
 export default notificationsSlice.reducer

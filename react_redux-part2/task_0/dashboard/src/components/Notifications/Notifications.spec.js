@@ -1,190 +1,75 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
-import mockAxios from 'jest-mock-axios';
+import { Profiler } from 'react';
+import { screen, fireEvent } from '@testing-library/react';
+import { renderWithProviders } from '../../test-utils';
 import Notifications from './Notifications';
-import notificationsSlice, { fetchNotifications } from '../../features/notifications/notificationsSlice';
 
+const notifications = [
+  { id: 1, type: 'default', value: 'New course available' },
+  { id: 2, type: 'urgent', value: 'New resume available' },
+  { id: 3, type: 'urgent', html: { __html: '<strong>Urgent requirement</strong>' } },
+];
 
-describe('Notifications', () => {
-  let store;
+const preloadedState = { notifications: { notifications } };
+const getDrawer = () => screen.getByText(/here is the list of notifications/i).parentElement;
+const getMenu = () => screen.getByText(/your notifications/i);
+const visibleClass = /(?:^|\s)visible_[^\s]+/;
 
-  beforeEach(() => {
-    store = configureStore({
-      reducer: {
-        notifications: notificationsSlice,
-      },
-    });
-  });
+function renderNotifications() {
+  return renderWithProviders(<Notifications />, { preloadedState });
+}
 
-  afterEach(() => {
-    mockAxios.reset();
-  });
+test('renders without crashing', () => {
+  renderNotifications();
+  expect(getMenu()).toBeInTheDocument();
+  expect(screen.getByText('New course available')).toBeInTheDocument();
+  expect(screen.getByText('New resume available')).toBeInTheDocument();
+});
 
-  test('renders without crashing', async () => {
-    const promise = store.dispatch(fetchNotifications());
+test('toggles drawer visibility when clicking the title', () => {
+  renderNotifications();
+  const drawer = getDrawer();
+  expect(drawer.className).not.toMatch(visibleClass);
+  fireEvent.click(getMenu());
+  expect(drawer.className).toMatch(visibleClass);
+  fireEvent.click(getMenu());
+  expect(drawer.className).not.toMatch(visibleClass);
+  expect(screen.getByText('New course available')).toBeInTheDocument();
+});
 
-    mockAxios.mockResponse({
-      data: {
-        notifications: [
-          { id: 1, type: 'default', value: 'New course available' },
-          { id: 2, type: 'urgent', value: 'New resume available' },
-          { id: 3, type: 'urgent', value: 'Placeholder' },
-        ],
-      },
-    });
+test('closes drawer on close button', () => {
+  renderNotifications();
+  fireEvent.click(getMenu());
+  expect(getDrawer().className).toMatch(visibleClass);
+  fireEvent.click(screen.getByRole('button', { name: /close/i }));
+  expect(getDrawer().className).not.toMatch(visibleClass);
+});
 
-    await promise;
+test('marks notification as read', () => {
+  const { store } = renderNotifications();
+  fireEvent.click(getMenu());
+  fireEvent.click(screen.getByText('New course available'));
+  expect(screen.queryByText('New course available')).not.toBeInTheDocument();
+  expect(store.getState().notifications.notifications).toHaveLength(2);
+  expect(screen.getAllByRole('listitem', { hidden: true })).toHaveLength(2);
+});
 
-    render(
-      <Provider store={store}>
-        <Notifications />
-      </Provider>
-    );
+test('drawer starts hidden', () => {
+  renderNotifications();
+  expect(getDrawer().className).not.toMatch(visibleClass);
+});
 
-    expect(screen.getByText(/your notifications/i)).toBeInTheDocument();
-    expect(screen.getByText('New course available')).toBeInTheDocument();
-    expect(screen.getByText('New resume available')).toBeInTheDocument();
-  });
-
-  test('toggles drawer visibility when clicking the title', async() => {
-    const promise = store.dispatch(fetchNotifications());
-
-    mockAxios.mockResponse({
-      data: {
-        notifications: [
-          { id: 1, type: 'default', value: 'New course available' },
-          { id: 2, type: 'urgent', value: 'New resume available' },
-          { id: 3, type: 'urgent', value: 'Placeholder' },
-        ],
-      },
-    });
-
-    await promise;
-
-    render(
-      <Provider store={store}>
-        <Notifications />
-      </Provider>
-    );
-
-    expect(screen.getByText('New course available')).toBeInTheDocument();
-    expect(screen.getByText('New resume available')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByText(/your notifications/i));
-    expect(screen.queryByRole('listitem', { name: 'New course available' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('listitem', { name: 'New resume available' })).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByText(/your notifications/i));
-    expect(screen.getByText('New course available')).toBeInTheDocument();
-    expect(screen.getByText('New resume available')).toBeInTheDocument();
-  });
-
-  test('close drawer on close button', async () => {
-    const promise = store.dispatch(fetchNotifications());
-
-    mockAxios.mockResponse({
-      data: {
-        notifications: [
-          { id: 1, type: 'default', value: 'New course available' },
-          { id: 2, type: 'urgent', value: 'New resume available' },
-          { id: 3, type: 'urgent', value: 'Placeholder' },
-        ],
-      },
-    });
-
-    await promise;
-
-    render(
-      <Provider store={store}>
-        <Notifications />
-      </Provider>
-    );
-
-    expect(screen.getByText('New course available')).toBeInTheDocument();
-  });
-
-  test('marks notification as read', async () => {
-    const promise = store.dispatch(fetchNotifications());
-
-    mockAxios.mockResponse({
-      data: {
-        notifications: [
-          { id: 1, type: 'default', value: 'New course available' },
-          { id: 2, type: 'urgent', value: 'New resume available' },
-          { id: 3, type: 'urgent', value: 'Placeholder' },
-        ],
-      },
-    });
-
-    await promise;
-
-    render(
-      <Provider store={store}>
-        <Notifications />
-      </Provider>
-    );
-
-    const firstNotification = screen.getByText('New course available');
-
-    fireEvent.click(firstNotification);
-
-    await waitFor(() => {
-      const updatedNotifications = screen.getAllByRole('listitem');
-      expect(updatedNotifications).toHaveLength(2);
-    });
-  });
-
-  test('renders with displayDrawer true', async () => {
-    const promise = store.dispatch(fetchNotifications());
-
-    mockAxios.mockResponse({
-      data: {
-        notifications: [
-          { id: 1, type: 'default', value: 'New course available' },
-          { id: 2, type: 'urgent', value: 'New resume available' },
-          { id: 3, type: 'urgent', value: 'Placeholder' },
-        ],
-      },
-    });
-
-    await promise;
-
-    render(
-      <Provider store={store}>
-        <Notifications />
-      </Provider>
-    );
-
-    expect(screen.getByText(/your notifications/i)).toBeInTheDocument();
-  });
-
-  test('does not re-render when drawer visibility is toggled', async () => {
-    const promise = store.dispatch(fetchNotifications());
-
-    mockAxios.mockResponse({
-      data: {
-        notifications: [
-          { id: 1, type: 'default', value: 'New course available' },
-          { id: 2, type: 'urgent', value: 'New resume available' },
-          { id: 3, type: 'urgent', value: 'Placeholder' },
-        ],
-      },
-    });
-
-    await promise;
-
-    render(
-      <Provider store={store}>
-        <Notifications />
-      </Provider>
-    );
-
-    expect(screen.getByText('New course available')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByText(/your notifications/i));
-
-    fireEvent.click(screen.getByText(/your notifications/i));
-    expect(screen.getByText('New course available')).toBeInTheDocument();
-  });
+test('does not re-render when drawer visibility is toggled', () => {
+  const onRender = jest.fn();
+  renderWithProviders(
+    <Profiler id="Notifications" onRender={onRender}>
+      <Notifications />
+    </Profiler>,
+    { preloadedState }
+  );
+  const initialRenderCount = onRender.mock.calls.length;
+  fireEvent.click(getMenu());
+  expect(getDrawer().className).toMatch(visibleClass);
+  fireEvent.click(getMenu());
+  expect(getDrawer().className).not.toMatch(visibleClass);
+  expect(onRender).toHaveBeenCalledTimes(initialRenderCount);
 });
