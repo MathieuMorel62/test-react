@@ -1,0 +1,17 @@
+import { createSelector } from '@reduxjs/toolkit';
+
+const selectNotifications = (state) => state.notifications.notifications;
+const selectFilter = (state, filter) => filter;
+
+export const getFilteredNotifications = createSelector(
+  [selectNotifications, selectFilter],
+  (notifications, filter) => {
+    if (filter === 'all') {
+      return notifications;
+    }
+
+    return notifications.filter(
+      (notification) => notification.type === filter
+    );
+  }
+);
