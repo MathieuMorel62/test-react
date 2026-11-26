@@ -20,7 +20,7 @@ describe('authSlice', () => {
   })
 
   test('isLoggedIn is false in the initial state', () => {
-    expect(initialState.user.isLoggedIn).toBe(false)
+    expect(initialState.isLoggedIn).toBe(false);
   })
 
   test('resets the state correctly with logout', () => {
